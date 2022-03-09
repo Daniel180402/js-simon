@@ -1,39 +1,61 @@
-let randomNumbers = [];
-let userNumbers = [];
-let writeRandomNumbers = document.getElementById("random-numbers");
+const randomNumbers = [];
 
-for( i=0; i <  5; i++){
-    randomNumbers.push(randomInteger(1, 100));
+for (i = 0 ; i < 5 ; i++){
+    randomNumbers.push( generateUniqueRandomNumber(randomNumbers, 0, 100));
 }
 
-writeRandomNumbers.innerHTML = "i numeri sono: " + randomNumbers;
+document.getElementById('random-numbers').innerHTML = randomNumbers.join(', ');
 console.log(randomNumbers);
 
-setTimeout(userNumPrompt, 3000);
+setTimeout( hideNumbers, 5000 );
+setTimeout( askUser, 5700, randomNumbers );
 
-//   per verificare la presenza di un elemento x in un array y => y.includes(x)
+function hideNumbers(){
+    document.getElementById('random-numbers').innerHTML = "";
+}
 
-for(i = 0; i < 5; i++){
-    if ( randomNumbers.include(userNum)){
-        console.log("numero " + i + " corretto")
+function askUser(promptNumber){
+    const userNumbers = [];
+    const guessedNumbers = [];
+
+    for (i = 0 ; i < 5 ; i++){
+        const currentNumber = parseInt( prompt('inserisci un numero'));
+
+        if (!isNaN(currentNumber)){
+
+            userNumbers.push(currentNumber);
+
+            if (promptNumber.includes(currentNumber)){
+                // l'utente ha indovinato nu numero
+                pushUnique(guessedNumbers, currentNumber);
+            }
+        }
     }
-    else{
-        console.log("numero " + i + " errato")
+
+    const numberPrefix = (guessedNumbers !== 1) ? "numeri" : "numero";
+
+    document.getElementById('random-numbers').innerHTML = `Hai indovinato
+    ${guessedNumbers.length} ${numberPrefix} validi, ovvero:
+    ${guessedNumbers.join(', ')}, sui numeri mostrati
+    che erano ${promptNumber.join(', ')}` ;
+}
+
+function pushUnique(array, elementToAdd){
+    if (!array.includes(elementToAdd)){
+        array.push(elementToAdd);
+        return array;
     }
 }
 
-function randomInteger(min, max){
-    if (isNaN(parseInt(min)) || isNaN(parseInt(max))){
-        console.error("randomInteger(min, max) needs two numbers as argument");
+function generateUniqueRandomNumber( numsBlacklist, min, max){
+    let check = false;
+    let randomInt;
+
+    while ( !check ){
+        randomInt  = Math.floor(Math.random() * ((max + 1) - min) + min);
+        if ( !numsBlacklist.includes(randomInt) ){
+            check = true;
+        }
     }
-    return (Math.floor(Math.random() * ((max + 1) - min) + min));
+    return randomInt;
 }
-
-
-function userNumPrompt(){
-    for( i=0; i < 5; i++){
-        userNumbers.push(parseInt(prompt("inserisci il numero")));
-    }
-    return userNumbers;
-}
-
